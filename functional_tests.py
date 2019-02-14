@@ -14,6 +14,11 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
 
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Gabriel has heard about a cool new online to-do app.
         # He goes to check out is homepage
@@ -39,7 +44,7 @@ class NewVisitorTest(unittest.TestCase):
         # '1: Buy weightlifting straps' as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
-
+        self.check_for_row_in_list_table('1: Buy weightlifting straps')
         # There is still a text box inviting her to add another item.
         # He enters 'Use straps to train deadlifts'
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -50,12 +55,8 @@ class NewVisitorTest(unittest.TestCase):
         # The page updates again, and now shows both items on her list
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Buy weightlifting straps', [row.text for row in rows])
-        self.assertIn(
-            '2: Use straps to train deadlifts',
-            [row.text for row in rows]
-        )
-
+        self.check_for_row_in_list_table('1: Buy weightlifting straps')
+        self.check_for_row_in_list_table('2: Use straps to train deadlifts')
 
         # Gabriel wonder whether the site will remember her list. Then he sees
         # that the site has generated a unique URL for him -- there is some
